@@ -6,6 +6,8 @@
 //      http://boost.2283326.n4.nabble.com/Spirit-X3-employee-cpp-compile-error-tp4687704p4687731.html
 //  [spirit]
 //    https://github.com/boostorg/spirit/tree/develop
+//  [rule.hpp]
+//    https://github.com/boostorg/spirit/blob/develop/include/boost/spirit/home/x3/nonterminal/rule.hpp
 //  [calc1]
 //    [spirit]/example/x3/calc/calc1.cpp  
 //Purpose:
@@ -19,13 +21,17 @@
 //  rule_def's need to be defined before used; however, with
 //  mutual recursion, that's impossible.  However, it is
 //  possible to just use a rule instead of a rule_definition
-//  on the RHS of the "special" rule to avoid that
-//  problem. See calc1 grammar with:
+//  on the RHS of the "right" rule to avoid that
+//  problem.  To see this, run calc1 grammar with:
 //
-//    #define USE_MUTUAL_RECURSION 1
 //    #define USE_SPIRIT_DEFINE 0
 //
-//  where the "special" rule is the expr rule.
+//  where the "right" rule is the expr rule.  If the "wrong"
+//  rule is chosen, then the static_assert in the default
+//  parse_rule (in rule.hpp) will fire.  To see this, run
+//  the same code with the additional:
+//
+//    #define USE_TERM_EXPR 0
 //
 //  In contrast using BOOST_SPIRIT_DEFINE with mutually
 //  recursive rules requires only using rule's on RHS of
@@ -52,7 +58,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
     return os;
 }
-
 
 namespace employee {
 
@@ -106,23 +111,43 @@ namespace calc1 {
         );
     auto const start=expr;
   #else
-    #define USE_MUTUAL_RECURSION 1
-    auto const term_def = ( term =
-            int_
-      #if USE_MUTUAL_RECURSION
-        |   '(' 
-            // >> expr_def //fails compile since expr_def not defined yet.
-            >> expr
-            >> ')'
-      #endif
-        )
-        ; 
-    auto const expr_def = ( expr =
-        term_def
-        >> *( '+' >> term_def
-            )
-        )
-        ;
+    #define USE_TERM_EXPR 1
+    #if USE_TERM_EXPR
+      auto const term_def = 
+          ( term =
+              int_
+          |   '(' 
+              // >> expr_def //fails compile since expr_def not defined yet.
+              >> expr
+              >> ')'
+          )
+          ; 
+      auto const expr_def = 
+          ( expr =
+              term_def
+          >> *( '+' >> term_def
+              )
+          )
+          ;
+    #else
+      //This code fails compilation because of firing of the static_assert
+      //in the default parse_rule in [rule.hpp]#27
+      auto const expr_def = 
+          ( expr =
+              term
+          >> *( '+' >> term
+              )
+          )
+          ;
+      auto const term_def = 
+          ( term =
+              int_
+          |   '(' 
+              >> expr_def
+              >> ')'
+          )
+          ; 
+    #endif //USE_TERM_EXPR
     auto const start=expr_def;
   #endif
 }
