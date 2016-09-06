@@ -12,13 +12,25 @@
 //  Help understand *how* spirit uses the context to define the RHS of a rule
 //  and understand limitations of this method for recursive rules.
 //Result:
-//  Will not work with mutually recursive rules because the rule_def's
-//  need to be defined before used; however, with mutual recursion,
-//  that's impossible.  See calc1 grammar with:
+//  Using the context to store the association between the
+//  rule and it's rule_defintion is more error prone than
+//  using BOOST_SPIRIT_DEFINE with mutually recursive multi
+//  rule grammars because, when using the context, the
+//  rule_def's need to be defined before used; however, with
+//  mutual recursion, that's impossible.  However, it is
+//  possible to just use a rule instead of a rule_definition
+//  on the RHS of the "special" rule to avoid that
+//  problem. See calc1 grammar with:
+//
 //    #define USE_MUTUAL_RECURSION 1
 //    #define USE_SPIRIT_DEFINE 0
-//  Instead, only using BOOST_SPIRIT_DEFINE with mutually recursive
-//  rules will work.
+//
+//  where the "special" rule is the expr rule.
+//
+//  In contrast using BOOST_SPIRIT_DEFINE with mutually
+//  recursive rules requires only using rule's on RHS of
+//  grammars and there's no "special" rule.
+//
 //========================================================
 #include "tracing.hpp"
 #include <boost/spirit/home/x3.hpp>
@@ -79,15 +91,17 @@ namespace calc1 {
   #if USE_SPIRIT_DEFINE
     auto const term_def =
             int_
-        |   '(' >> expr >> ')'
+        |   '(' 
+             >> expr 
+             >> ')'
         ; 
     auto const expr_def =
         term
         >> *( '+' >> term
             )
         ;
-    BOOST_SPIRIT_DEFINE(
-          term
+    BOOST_SPIRIT_DEFINE
+        ( term
         , expr
         );
     auto const start=expr;
@@ -96,7 +110,10 @@ namespace calc1 {
     auto const term_def = ( term =
             int_
       #if USE_MUTUAL_RECURSION
-        |   '(' >> expr_def >> ')'
+        |   '(' 
+            // >> expr_def //fails compile since expr_def not defined yet.
+            >> expr
+            >> ')'
       #endif
         )
         ; 
@@ -122,11 +139,11 @@ main()
       ;
     using boost::spirit::x3::ascii::space;
     std::string input(
-        "0, <P00>, <P01>, <P02>"
-        "1, <P10>"
-        "2, <P21>,<P22>"
-        "3, <P31>"
-        "4, <P41>,<P42>,<P43>,<P44>"
+        " 0, <P00>, <P01>, <P02>"
+        " 1, <P10>"
+        " 2, <P21>,<P22>"
+        " 3, <P31>"
+        " 4, <P41>,<P42>,<P43>,<P44>"
     );
     auto iter = input.begin();
     employee::result_type res;
@@ -173,7 +190,7 @@ main()
       }
     }
   }        
-#endif
+#endif //USE_CALC1
   std::cout<<"main:return 0\n";
   return 0;        
 }
