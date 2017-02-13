@@ -1,5 +1,0 @@
-nonius.qi.spirit.GET0.XRULE0.run.out:mean: 821.295 μs, lb 820.828 μs, ub 822.268 μs, ci 0.95
-nonius.x3_crtp.fork.GET1.XRULE1.run.out:mean: 1390.14 μs, lb 1388.77 μs, ub 1392.75 μs, ci 0.95
-nonius.x3_ns_rdef.fork.GET1.XRULE0.run.out:mean: 1360.06 μs, lb 1359.2 μs, ub 1361.29 μs, ci 0.95
-nonius.x3_ns_rdef.fork.GET1.XRULE1.run.out:mean: 1059.66 μs, lb 1057.04 μs, ub 1064.08 μs, ci 0.95
-nonius.x3_ns_rdef.spirit.GET0.XRULE0.run.out:mean: 1259.38 μs, lb 1257.73 μs, ub 1263.83 μs, ci 0.95

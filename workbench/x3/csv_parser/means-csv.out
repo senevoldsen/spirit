@@ -1,0 +1,5 @@
+nonius-csv-qi-spirit-GET0-XRULE0-clangxx3_9_pkg.out:mean: 824.608 μs, lb 823.293 μs, ub 827.11 μs, ci 0.95
+nonius-csv-x3_crtp-fork-GET1-XRULE1-clangxx3_9_pkg.out:mean: 1406.24 μs, lb 1405.63 μs, ub 1407.39 μs, ci 0.95
+nonius-csv-x3_ns_rdef-fork-GET1-XRULE0-clangxx3_9_pkg.out:mean: 1362.37 μs, lb 1360.06 μs, ub 1368.39 μs, ci 0.95
+nonius-csv-x3_ns_rdef-fork-GET1-XRULE1-clangxx3_9_pkg.out:mean: 1056.51 μs, lb 1054.78 μs, ub 1062.73 μs, ci 0.95
+nonius-csv-x3_ns_rdef-spirit-GET0-XRULE0-clangxx3_9_pkg.out:mean: 1309.55 μs, lb 1298.48 μs, ub 1321.28 μs, ci 0.95
