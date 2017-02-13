@@ -1,6 +1,9 @@
 SHELL := /bin/bash
-PATH := $(USER)/bin:$(PATH)
+PATH := $(HOME)/bin:$(PATH)
+PPROF.install := $(HOME)/dwnlds/gperftools/build/install
 HOW=clangxx3_9_pkg
+#HOW=gcc6_20151018
+BENCH.main=csv
 ifdef USE_MACRO_INCLUDE
 #invoke make with something like:
 #  make USE_MACRO_INCLUDE=1
@@ -45,26 +48,40 @@ OPTS.spirit=$(INCS)
 OPTS.fork=-I$(boost.spirit.fork) $(INCS)
 
 define bench_make
-nonius.$(1).$(2).GET$(3).XRULE$(4).run.exe: nonius.cpp $(1).hpp input.hpp
+nonius-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).exe: nonius-$(BENCH.main).cpp $(1).hpp input.hpp
 	$(COMPILER.$(HOW)) -std=c++1z $(OPTS.optim) \
 	  -DBENCH_INC=$(1).hpp \
 	  -DBOOST_SPIRIT_GET_RHS_CRTP=$(3) \
 	  -DBOOST_SPIRIT_ATTR_XFORM_IN_RULE=$(4) \
-	  $(OPTS.$(2)) $(LINK.opts) nonius.cpp -o $$@
-nonius.$(1).$(2).GET$(3).XRULE$(4).run.out: nonius.$(1).$(2).GET$(3).XRULE$(4).run.exe
+	  $(OPTS.$(2)) $(LINK.opts) nonius-$(BENCH.main).cpp -o $$@
+nonius-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).out: nonius-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).exe
 	./$$< -o $$@
 	cat $$@
-profiled.$(1).$(2).GET$(3).XRULE$(4).prof.exe: profiled.cpp $(1).hpp input.hpp
+gprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW)-prof.exe: gprof-$(BENCH.main).cpp $(1).hpp input.hpp
 	$(COMPILER.$(HOW)) -std=c++1z -pg -O0 \
 	  -DBENCH_INC=$(1).hpp \
 	  -DBOOST_SPIRIT_GET_RHS_CRTP=$(3) \
 	  -DBOOST_SPIRIT_ATTR_XFORM_IN_RULE=$(4) \
-	  $(OPTS.$(2)) $(LINK.opts) profiled.cpp -o $$@
-profiled.$(1).$(2).GET$(3).XRULE$(4).gmon.out: profiled.$(1).$(2).GET$(3).XRULE$(4).prof.exe
+	  $(OPTS.$(2)) $(LINK.opts) gprof-$(BENCH.main).cpp -o $$@
+gprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW)-gmon.out: gprof-$(BENCH.main)-$(1)-$(2).GET$(3)-XRULE$(4)-$(HOW)-prof.exe
 	./$$<
-	mv gmon.out profiled.$(1).$(2).GET$(3).XRULE$(4).gmon.out
-profiled.$(1).$(2).GET$(3).XRULE$(4).prof.out: profiled.$(1).$(2).GET$(3).XRULE$(4).gmon.out
-	gprof --demangle profiled.$(1).$(2).GET$(3).XRULE$(4).prof.exe ./$$< > $$@
+	mv gmon.out gprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW)-gmon.out
+gprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW)-gprof.out: gprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW)-gmon.out
+	gprof --demangle gprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW)-prof.exe ./$$< > $$@
+pprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).exe: pprof-$(BENCH.main).cpp $(1).hpp input.hpp
+	$(COMPILER.$(HOW)) -std=c++1z -O0 \
+	  -DBENCH_INC=$(1).hpp \
+	  -DBOOST_SPIRIT_GET_RHS_CRTP=$(3) \
+	  -DBOOST_SPIRIT_ATTR_XFORM_IN_RULE=$(4) \
+	  -I$(PPROF.install)/include \
+	  -L $(PPROF.install)/lib -l profiler \
+	  $(OPTS.$(2)) $(LINK.opts) pprof-$(BENCH.main).cpp -o $$@
+pprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).prof: pprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).exe
+	  ./$$< $$@
+pprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).text: \
+  pprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).exe\
+  pprof-$(BENCH.main)-$(1)-$(2)-GET$(3)-XRULE$(4)-$(HOW).prof
+	  $(PPROF.install)/bin/pprof --text $$^ > $$@
 endef
 
 BENCH_INCS:=qi x3_ns_rdef x3_crtp
@@ -77,35 +94,40 @@ $(foreach get,$(GET_RHS),\
 $(foreach xrule,$(XFORM_IN_RULE),\
 $(eval $(call bench_make,$(inc),$(ver),$(get),$(xrule)))))))
 
-RUNS=\
-  nonius.qi.spirit.GET0.XRULE0.run.out\
-  nonius.x3_ns_rdef.spirit.GET0.XRULE0.run.out\
-  nonius.x3_ns_rdef.fork.GET0.XRULE0.run.out\
-  nonius.x3_ns_rdef.fork.GET0.XRULE1.run.out\
-  nonius.x3_ns_rdef.fork.GET1.XRULE0.run.out\
-  nonius.x3_ns_rdef.fork.GET1.XRULE1.run.out\
-  nonius.x3_crtp.fork.GET1.XRULE0.run.out\
-  nonius.x3_crtp.fork.GET1.XRULE1.run.out\
+BENCHS=\
+  nonius-$(BENCH.main)-qi-spirit-GET0-XRULE0-$(HOW).out\
+  nonius-$(BENCH.main)-x3_ns_rdef-spirit-GET0-XRULE0-$(HOW)-bench.out\
+  nonius-$(BENCH.main)-x3_ns_rdef-fork-GET0-XRULE0-$(HOW).out\
+  nonius-$(BENCH.main)-x3_ns_rdef-fork-GET0-XRULE1-$(HOW).out\
+  nonius-$(BENCH.main)-x3_ns_rdef-fork-GET1-XRULE0-$(HOW).out\
+  nonius-$(BENCH.main)-x3_ns_rdef-fork-GET1-XRULE1-$(HOW).out\
+  nonius-$(BENCH.main)-x3_crtp-fork-GET1-XRULE0-$(HOW).out\
+  nonius-$(BENCH.main)-x3_crtp-fork-GET1-XRULE1-$(HOW).out\
   ###
-RUNS= \
-  nonius.qi.spirit.GET0.XRULE0.run.out\
-  nonius.x3_ns_rdef.spirit.GET0.XRULE0.run.out\
-  nonius.x3_ns_rdef.fork.GET1.XRULE0.run.out \
-  nonius.x3_ns_rdef.fork.GET1.XRULE1.run.out \
-  nonius.x3_crtp.fork.GET1.XRULE1.run.out \
+BENCHS= \
+  nonius-$(BENCH.main)-qi-spirit-GET0-XRULE0-$(HOW).out\
+  nonius-$(BENCH.main)-x3_ns_rdef-spirit-GET0-XRULE0-$(HOW).out\
+  nonius-$(BENCH.main)-x3_ns_rdef-fork-GET1-XRULE0-$(HOW).out \
+  nonius-$(BENCH.main)-x3_ns_rdef-fork-GET1-XRULE1-$(HOW).out \
+  nonius-$(BENCH.main)-x3_crtp-fork-GET1-XRULE1-$(HOW).out \
   ###
-runs: $(RUNS)
+benchs: $(BENCHS)
 
-PROFS=\
-  profiled.x3_ns_rdef.fork.GET1.XRULE0.prof.out\
-#  nonius.x3_ns_rdef.fork.GET1.XRULE0.prof.out\
-  nonius.x3_ns_rdef.fork.GET1.XRULE1.prof.out\
+GPROFS=\
+  gprof-$(BENCH.main).x3_ns_rdef.fork.GET1.XRULE0-$(HOW).gprof.out\
+  #gprof-$(BENCH.main).x3_ns_rdef.fork.GET1.XRULE1-$(HOW).gprof.out\
   ###
-profs: $(PROFS)
+gprofs: $(GPROFS)
 
-means: $(RUNS)
-	grep -e '^mean: ' nonius.*.run.out > means.out
-	cat means.out
+PPROFS=\
+  pprof-csv-x3_ns_rdef-fork-GET1-XRULE0-$(HOW).text\
+  pprof-csv-qi-spirit-GET0-XRULE0-$(HOW).text\
+  ###
+pprofs: $(PPROFS)
+
+means: $(BENCHS)
+	grep -e '^mean: ' nonius-$(BENCH.main)-*-$(HOW).out > means-$(BENCH.main).out
+	cat means-$(BENCH.main).out
 
 test:
 	$(COMPILER.$(HOW)) -DBENCH_INC=test.hpp -std=c++1z -pg test.cpp -o test.exe
@@ -113,7 +135,7 @@ test:
 	#gprof test.exe > $@.gprof_out
 
 prof_grep:
-	perl filt_gprof_flat.pl < nonius.x3_ns_rdef.spirit.GET0.XRULE0.prof.out
+	perl filt_gprof_flat.pl < nonius-$(BENCH.main)-x3_ns_rdef.spirit.GET0.XRULE0-$(HOW).gprof.out
 
 
 
