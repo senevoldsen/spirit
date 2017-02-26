@@ -1,0 +1,6 @@
+chrono-csv-qi-spirit-GET0-XRULE0-OptO0-gcc6_20151018.out:mean: 40.744ms
+chrono-csv-qi-spirit-GET0-XRULE0-OptO1-gcc6_20151018.out:mean: 0.863ms
+chrono-csv-qi-spirit-GET0-XRULE0-OptO2-gcc6_20151018.out:mean: 0.783ms
+chrono-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO0-gcc6_20151018.out:mean: 28.922ms
+chrono-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO1-gcc6_20151018.out:mean: 1.749ms
+chrono-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO2-gcc6_20151018.out:mean: 1.413ms

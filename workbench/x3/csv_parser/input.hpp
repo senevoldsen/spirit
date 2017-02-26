@@ -44,10 +44,10 @@ FFdiE,r9hgU,wgLU6,GXT8h,DFdTP,sgOPJ,NfRLm,5aSPe,EBBJP,cHfMA,GEPof,cOtMk,kNvKj,JV
 
 #ifdef HASH_CHECK
   static const size_t sanity_checksum = 9044976983868382590; // 4780368619039459483;
+  #include <boost/functional/hash.hpp>
+  #include <iostream>
 #endif
-
-#include <boost/functional/hash.hpp>
-#include <iostream>
+#include <vector>
 
 using CsvString            = std::string; // std::vector<char>;
 using CsvRecordInformation = std::vector<CsvString>;

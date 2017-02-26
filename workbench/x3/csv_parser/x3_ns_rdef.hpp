@@ -29,7 +29,7 @@ namespace csv {
             field % fieldSep;
 
         auto file   = rule<struct _, CsvFileInformation>{ "file" } =
-            ((!eoi > record) % lineBreak) > -lineBreak > eoi;
+            (((!eoi) > record) % lineBreak) > -lineBreak > eoi;
 
         return file;
     };

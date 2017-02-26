@@ -20,6 +20,16 @@
 #include <boost/fusion/include/front.hpp>
 #include <boost/fusion/include/back.hpp>
 #include <boost/variant/apply_visitor.hpp>
+#ifndef BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE
+  #define BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE 1
+#endif
+#if defined(BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE) && defined(__clang__)
+  #define BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE_CLANG
+#endif//BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE
+#ifdef BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE_CLANG
+  #include <boost/core/demangle.hpp>
+  #include <typeinfo>
+#endif//BOOST_SPIRIT_PARSE_INTO_CONTAINER_BASE_IMPL_TRACE_CLANG 
 
 namespace boost { namespace spirit { namespace x3 { namespace detail
 {
@@ -98,12 +108,11 @@ namespace boost { namespace spirit { namespace x3 { namespace detail
             value_type;
             value_type val = traits::value_initialize<value_type>::call();
 
-            if (!parser.parse(first, last, context, rcontext, val))
-                return false;
-
-            // push the parsed value into our attribute
-            traits::push_back(attr, val);
-            return true;
+            bool r=parser.parse(first, last, context, rcontext, val);
+            if (r)
+              // push the parsed value into our attribute
+              traits::push_back(attr, val);
+            return r;
         }
 
         // Parser has attribute (synthesize; Attribute is a container)
