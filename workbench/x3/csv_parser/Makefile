@@ -159,7 +159,9 @@ summary.chrono: $(BENCHS.chrono)
 	cat summary.chrono-$(BENCH.main)-$(HOW).out
 
 MAIN_FLAGS.profile=\
+  $(BENCH.main)-qi-spirit-GET0-XRULE0-OptO0-$(HOW)\
   $(BENCH.main)-qi-spirit-GET0-XRULE0-OptO1-$(HOW)\
+  $(BENCH.main)-x3_ns_rdef-spirit-GET0-XRULE0-OptO0-$(HOW)\
   $(BENCH.main)-x3_ns_rdef-spirit-GET0-XRULE0-OptO1-$(HOW)\
   ###
 
