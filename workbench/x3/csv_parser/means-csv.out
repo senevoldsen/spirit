@@ -1,8 +1,0 @@
-nonius-csv-qi-spirit-GET0-XRULE0-OptO0-clangxx3_9_pkg.out:mean: 41.7451 ms, lb 41.7057 ms, ub 41.8098 ms, ci 0.95
-nonius-csv-qi-spirit-GET0-XRULE0-OptO1-clangxx3_9_pkg.out:mean: 16.0999 ms, lb 16.0946 ms, ub 16.1063 ms, ci 0.95
-nonius-csv-qi-spirit-GET0-XRULE0-OptO2-clangxx3_9_pkg.out:mean: 825.004 μs, lb 824.513 μs, ub 826.168 μs, ci 0.95
-nonius-csv-qi-spirit-GET0-XRULE0-OptO3-clangxx3_9_pkg.out:mean: 823.41 μs, lb 822.529 μs, ub 826.415 μs, ci 0.95
-nonius-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO0-clangxx3_9_pkg.out:mean: 25.8348 ms, lb 25.8209 ms, ub 25.8559 ms, ci 0.95
-nonius-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO1-clangxx3_9_pkg.out:mean: 14.1008 ms, lb 14.0975 ms, ub 14.11 ms, ci 0.95
-nonius-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO2-clangxx3_9_pkg.out:mean: 1244.51 μs, lb 1243.97 μs, ub 1245.61 μs, ci 0.95
-nonius-csv-x3_ns_rdef-spirit-GET0-XRULE0-OptO3-clangxx3_9_pkg.out:mean: 1263.22 μs, lb 1261.52 μs, ub 1265.58 μs, ci 0.95
