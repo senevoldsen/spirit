@@ -18,7 +18,7 @@ namespace csv {
         using R = rule<struct _, CsvString>;
 
         auto unescaped = R{"raw"}    = *(~char_("\"\r\n") - fieldSep);
-        auto escaped   = R{"escaped"} = *(~char_('"') | '"' >> char_('"'));
+        auto escaped   = R{"escaped"} = *('"' >> char_('"') | ~char_('"'));
         auto quoted   = R{"quoted"} = '"' > escaped > '"';
 
         auto field = R{"field"} =
